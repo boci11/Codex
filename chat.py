@@ -30,6 +30,8 @@ def chat(message: str, model: str = "gpt-4o-mini") -> str:
         model=model,
         messages=[{"role": "user", "content": message}],
     )
+    if not response.choices or response.choices[0].message.content is None:
+        raise ValueError("API zwróciło pustą odpowiedź.")
     return response.choices[0].message.content
 
 
@@ -42,7 +44,11 @@ def main() -> None:
             break
         if not user_input:
             continue
-        reply = chat(user_input)
+        try:
+            reply = chat(user_input)
+        except Exception as exc:
+            print(f"Błąd API: {exc}\n")
+            continue
         print(f"ChatGPT: {reply}\n")
 
 
